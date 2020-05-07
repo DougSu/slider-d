@@ -7,15 +7,32 @@ function create_dom(that) {
         var oimg = document.createElement('img')
         oimg.src = that.arg.img[i]
         div.appendChild(oimg)
-        that.pdiv.appendChild(div)   
+        that.pdiv.appendChild(div)
+        if(that.arg.width != '' && !isNaN(that.arg.width)){
+            that.img_width = that.arg.width
+            console.log(that.img_width)
+            that.box.style.width = `${that.arg.width}px`
+            oimg.style.width = `${that.arg.width}px`
+        }else{
+            oimg.onload = function(){
+                that.img_width = oimg.width
+                that.box.style.width = `${oimg.width}px`
+            }
+        }
     }
-    
+        
+    that.box.appendChild(that.pdiv)
     var last = that.pdiv.childNodes[0].cloneNode(true)
     that.pdiv.appendChild(last)
-    that.img_width = oimg.offsetWidth
+    that.pdiv.style.display = 'flex'
     that.box.style.overflow = 'hidden'
     that.pdiv.style.display = 'flex'
 }
+
+
+
+/*         */
+
 function create_btn(that) {
     that.prev = document.createElement('span')
     that.next = document.createElement('span')
@@ -24,6 +41,10 @@ function create_btn(that) {
     that.pdiv.parentNode.appendChild(that.prev)
     that.pdiv.parentNode.appendChild(that.next)
 }
+
+/*         */
+
+
 function rev_move(that) {
     if (that.b) {
         that.b = false
@@ -41,19 +62,27 @@ function rev_move(that) {
                 } else {
                     reslove()
                 }
-            }, 30)
+            }, that.arg.speed)
         }).then(() => {
             that.b = true
             clearInterval(that.timer3)
         })
     }
 }
+
+/*         */
+
+
 function move(obj) {
-    obj.i += 10
+    obj.i += 5
     if (obj.i < (obj.img_width * obj.index) + 10 || obj.i == obj.img_width) {
         obj.pdiv.style.marginLeft = -obj.i + "px"
     }
 }
+
+/*         */
+
+
 function sliders(o) {
     var timer
     if (o.b) {
@@ -70,32 +99,40 @@ function sliders(o) {
                 if (o.i > o.img_width * o.index) {
                     reslove()
                 }
-            }, 30)
+            }, o.arg.speed)
         }).then(() => {
             o.b = true
             clearInterval(timer)
         })
     }
 }
-const Slider = function Slider(arg,box) {
+
+/*    */
+
+function autoplay(that){
+    if (that.arg.autoplay == true) {
+        that.timer1 = setInterval(sliders, that.arg.interval, that)
+        that.pdiv.parentNode.onmouseover = function () {
+            clearInterval(that.timer1)
+        }
+        that.pdiv.parentNode.onmouseleave = function () {
+            that.timer1 = setInterval(sliders, that.arg.interval, that)
+        }
+    }
+}
+class Slider {
+    constructor(arg,box) {
         var that = this
         this.box = box
         this.arg = arg
         this.b = true
+        this.box = box
         this.img_width
         this.img_count = this.arg.img.length - 1
         this.i = 0
         this.index = 0
         create_dom(that)
-        if (this.arg.autoplay != undefined && this.arg.btn == true) {
-            this.timer1 = setInterval(sliders, 1000, this)
-            this.pdiv.parentNode.onmouseover = function () {
-                clearInterval(that.timer1)
-            }
-            this.pdiv.parentNode.onmouseleave = function () {
-                that.timer1 = setInterval(sliders, 1000, that)
-            }
-        }
+        autoplay(that)
         if (this.arg.btn != undefined && this.arg.btn == true) {
             create_btn(that)
             this.prev.onclick = function () {
