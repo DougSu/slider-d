@@ -1,7 +1,6 @@
 function create_dom(that) {
     Slider.prototype.pdiv = document.createElement('div')
     that.pdiv.id = 'box'
-    console.log(that)
     that.box.appendChild(that.pdiv)
     for (let i = 0; i < that.arg.img.length; i++) {
         var div = document.createElement('div')
@@ -15,6 +14,7 @@ function create_dom(that) {
     that.pdiv.appendChild(last)
     that.img_width = oimg.offsetWidth
     that.box.style.overflow = 'hidden'
+    that.pdiv.style.display = 'flex'
 }
 function create_btn(that) {
     that.prev = document.createElement('span')
@@ -79,7 +79,6 @@ function sliders(o) {
 }
 const Slider = function Slider(arg,box) {
         var that = this
-        console.log(this)
         this.box = box
         this.arg = arg
         this.b = true
@@ -108,3 +107,4 @@ const Slider = function Slider(arg,box) {
             }
         }
 }
+export default Slider
